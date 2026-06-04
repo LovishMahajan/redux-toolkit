@@ -1,7 +1,7 @@
 // src/observability/auditMiddleware.ts
 import { type Middleware, isAction } from "@reduxjs/toolkit";
-import type { RootState } from "../app/store";
-import { selectCurrentUser } from "../features/auth/authSlice";
+import type { RootState } from "../app";
+import { selectCurrentUser } from "../features/auth";
 import { sink } from "./sink";
 
 const AUDITED = new Set([

@@ -1,5 +1,5 @@
 // src/services/authApi.ts
-import type { User } from "../features/auth/types";
+import type { User } from "../features/auth";
 
 export class ApiError extends Error {
 	constructor(

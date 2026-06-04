@@ -1,8 +1,7 @@
 // src/features/auth/__tests__/authThunks.test.ts
 import { describe, it, expect } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../authSlice';
-import { loginUser } from '../authThunks';
+import { authReducer, loginUser } from '..';
 
 const setup = () => configureStore({ reducer: { auth: authReducer } });
 

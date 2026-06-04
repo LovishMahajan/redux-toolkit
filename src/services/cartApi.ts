@@ -1,4 +1,4 @@
-import type { CartLine } from "../features/cart/types";
+import type { CartLine } from "../features/cart";
 
 export class ApiError extends Error {
 	constructor(

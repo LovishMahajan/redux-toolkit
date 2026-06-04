@@ -6,9 +6,9 @@ import {
 	itemRemovedFromCart,
 	cartCleared,
 	selectCartLines,
-} from "../features/cart/cartSlice";
-import { loginUser } from "../features/auth/authThunks";
-import { persistCart } from "../services/cartApi";
+} from "../features/cart";
+import { loginUser } from "../features/auth";
+import { cartApi } from "../services";
 
 export const listenerMiddleware = createListenerMiddleware();
 const startAppListening = listenerMiddleware.startListening.withTypes<
@@ -27,7 +27,7 @@ startAppListening({
 		// that no longer exists — persistCart([]) would 400 with "Cart is empty".
 		const state = api.getState();
 		if (state.auth.status !== "authenticated") return;
-		await persistCart(selectCartLines(state));
+		await cartApi.persistCart(selectCartLines(state));
 	},
 });
 

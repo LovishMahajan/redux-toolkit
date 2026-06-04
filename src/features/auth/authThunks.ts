@@ -1,8 +1,8 @@
 // src/features/auth/authThunks.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import type { RootState } from "../../app/store";
+import type { RootState } from "../../app";
 import type { User, AuthError } from "./types";
-import * as authApi from "../../services/authApi";
+import { authApi } from "../../services";
 
 export const loginUser = createAsyncThunk<
 	{ user: User; at: string }, // Returned  — the fulfilled payload

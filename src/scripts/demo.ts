@@ -1,7 +1,7 @@
 // src/scripts/demo.ts
-import { store } from '../app/store';
-import { userLoggedIn, userLoggedOut, selectIsAuthenticated } from '../features/auth/authSlice';
-import { itemAddedToCart, selectCartItemCount, selectCartSubtotalCents } from '../features/cart/cartSlice';
+import { store } from '../app';
+import { userLoggedIn, userLoggedOut, selectIsAuthenticated } from '../features/auth';
+import { itemAddedToCart, selectCartItemCount, selectCartSubtotalCents } from '../features/cart';
 
 const unsubscribe = store.subscribe(() => {
   console.log('[state]', JSON.stringify(store.getState()));

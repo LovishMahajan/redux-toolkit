@@ -1,11 +1,13 @@
 // src/app/store.ts
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import authReducer from "../features/auth/authSlice";
-import cartReducer from "../features/cart/cartSlice";
+import { authReducer } from "../features/auth";
+import { cartReducer } from "../features/cart";
 import { listenerMiddleware } from "./listeners";
-import { analyticsMiddleware } from "../observability/analyticsMiddleware";
-import { auditMiddleware } from "../observability/auditMiddleware";
-import { timingMiddleware } from "../observability/timingMiddleware";
+import {
+	analyticsMiddleware,
+	auditMiddleware,
+	timingMiddleware,
+} from "../observability";
 
 // Build the root reducer separately so RootState can be derived from it
 // WITHOUT depending on `store`. This breaks the cycle:

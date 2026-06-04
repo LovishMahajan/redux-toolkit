@@ -1,8 +1,8 @@
 // src/features/cart/cartSlice.ts
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { CartLine, CartState } from "./types";
-import type { RootState } from "../../app/store";
-import { userLoggedOut } from "../auth/authSlice";
+import type { RootState } from "../../app";
+import { userLoggedOut } from "../auth";
 
 const initialState: CartState = { lines: [] };
 

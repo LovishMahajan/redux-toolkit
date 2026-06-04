@@ -1,15 +1,14 @@
 // src/observability/__tests__/observability.test.ts
 import { describe, it, expect, beforeEach } from "vitest";
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "../../features/auth/authSlice";
-import cartReducer, {
-	itemAddedToCart,
-	cartCleared,
-} from "../../features/cart/cartSlice";
-import { timingMiddleware } from "../timingMiddleware";
-import { analyticsMiddleware } from "../analyticsMiddleware";
-import { auditMiddleware } from "../auditMiddleware";
-import { sink } from "../sink";
+import { authReducer } from "../../features/auth";
+import { cartReducer, itemAddedToCart, cartCleared } from "../../features/cart";
+import {
+	timingMiddleware,
+	analyticsMiddleware,
+	auditMiddleware,
+	sink,
+} from "..";
 
 const setup = () =>
 	configureStore({

@@ -1,7 +1,6 @@
 // src/features/cart/__tests__/cartSlice.test.ts
 import { describe, it, expect } from "vitest";
-import cartReducer, { itemAddedToCart } from "../cartSlice";
-import type { CartState } from "../types";
+import { cartReducer, itemAddedToCart, type CartState } from "..";
 
 describe("cart reducer", () => {
 	it("defaults quantity to 1 on a new line", () => {
