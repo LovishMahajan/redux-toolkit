@@ -5,6 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"demo": "tsx src/scripts/demo.ts",
+		"benchmark": "tsx src/scripts/benchmark.ts",
 		"test": "vitest run"
 	},
 	"keywords": [],

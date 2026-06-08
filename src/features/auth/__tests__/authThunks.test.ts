@@ -2,8 +2,13 @@
 import { describe, it, expect } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
 import { authReducer, loginUser } from '..';
+import { cartReducer } from '../../cart';
+import { catalogReducer } from '../../catalog';
 
-const setup = () => configureStore({ reducer: { auth: authReducer } });
+const setup = () =>
+  configureStore({
+    reducer: { auth: authReducer, cart: cartReducer, catalog: catalogReducer },
+  });
 
 describe('loginUser lifecycle', () => {
   it('anonymous → authenticating → authenticated (fulfilled)', async () => {
@@ -36,7 +41,11 @@ describe('loginUser lifecycle', () => {
     const store = setup();
     const p1 = store.dispatch(loginUser({ email: 'a@acme.io', password: 'correct' }));
     const r2 = await store.dispatch(loginUser({ email: 'b@acme.io', password: 'correct' }));
-    expect(r2.meta.condition).toBe(true); // second dispatch was condition-cancelled
+    // `condition` lives only on the rejected branch — narrow before accessing.
+    expect(r2.meta.requestStatus).toBe('rejected');
+    if (r2.meta.requestStatus === 'rejected') {
+      expect(r2.meta.condition).toBe(true); // second dispatch was condition-cancelled
+    }
     await p1;
   });
 });

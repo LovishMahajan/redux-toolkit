@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { configureStore } from "@reduxjs/toolkit";
 import { authReducer } from "../../features/auth";
 import { cartReducer, itemAddedToCart, cartCleared } from "../../features/cart";
+import { catalogReducer } from "../../features/catalog";
 import {
 	timingMiddleware,
 	analyticsMiddleware,
@@ -12,7 +13,7 @@ import {
 
 const setup = () =>
 	configureStore({
-		reducer: { auth: authReducer, cart: cartReducer },
+		reducer: { auth: authReducer, cart: cartReducer, catalog: catalogReducer },
 		middleware: (gdm) =>
 			gdm().concat(
 				timingMiddleware,
