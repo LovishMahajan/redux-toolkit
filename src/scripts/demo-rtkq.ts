@@ -34,10 +34,10 @@ async function main() {
 	// ─── 2. Infinite query: page 0 → 1 → 2, then end ───────────────────────
 	console.log("\n── 2. getProductsInfinite: paginate to the end");
 	const infiniteSub = store.dispatch(
-		catalogApi.endpoints.getProductsInfinite.initiate({}),
+		catalogApi.endpoints.getProductsInfinite.initiate(),
 	);
 	await infiniteSub.unwrap();
-	let snap = catalogApi.endpoints.getProductsInfinite.select({})(
+	let snap = catalogApi.endpoints.getProductsInfinite.select()(
 		store.getState(),
 	);
 	console.log(
@@ -46,26 +46,24 @@ async function main() {
 
 	await store
 		.dispatch(
-			catalogApi.endpoints.getProductsInfinite.initiate(
-				{},
-				{ direction: "forward" },
-			),
+			catalogApi.endpoints.getProductsInfinite.initiate(undefined, {
+				direction: "forward",
+			}),
 		)
 		.unwrap();
-	snap = catalogApi.endpoints.getProductsInfinite.select({})(store.getState());
+	snap = catalogApi.endpoints.getProductsInfinite.select()(store.getState());
 	console.log(
 		`  page 1 fetched. pages=${snap.data?.pages.length} hasNext=${snap.hasNextPage}`,
 	);
 
 	await store
 		.dispatch(
-			catalogApi.endpoints.getProductsInfinite.initiate(
-				{},
-				{ direction: "forward" },
-			),
+			catalogApi.endpoints.getProductsInfinite.initiate(undefined, {
+				direction: "forward",
+			}),
 		)
 		.unwrap();
-	snap = catalogApi.endpoints.getProductsInfinite.select({})(store.getState());
+	snap = catalogApi.endpoints.getProductsInfinite.select()(store.getState());
 	const flat = snap.data?.pages.flat().length ?? 0;
 	console.log(
 		`  page 2 fetched. pages=${snap.data?.pages.length} hasNext=${snap.hasNextPage} flat=${flat}`,

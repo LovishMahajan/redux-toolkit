@@ -42,11 +42,7 @@ export const catalogApi = api.injectEndpoints({
 					: [{ type: "Product" as const, id: "LIST" }],
 		}),
 
-		getProductsInfinite: build.infiniteQuery<
-			Product[],
-			Record<string, never>,
-			number
-		>({
+		getProductsInfinite: build.infiniteQuery<Product[], void, number>({
 			infiniteQueryOptions: {
 				initialPageParam: 0,
 				maxPages: 5,
