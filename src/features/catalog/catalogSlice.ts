@@ -7,7 +7,11 @@ import {
 	type PayloadAction,
 } from "@reduxjs/toolkit";
 import type { Product } from "./types";
-import type { RootState } from "../../app/store";
+
+// Phase 4 unwired this slice from the app store (product data moved into the
+// RTK Query cache). The eviction-policy lesson is still useful in isolation —
+// type the selectors against a local state shape instead of CatalogRootShape.
+type CatalogRootShape = { catalog: EntityState<Product, string> };
 
 const MAX_PRODUCTS = 500; // working-set cap — the slice holds only the active window
 
@@ -52,8 +56,8 @@ export const { productsUpserted, productRemoved, catalogCleared } =
 	catalogSlice.actions;
 export default catalogSlice.reducer;
 
-// Generated selectors, bound to the catalog location in RootState. selectById is O(1).
-const s = adapter.getSelectors((state: RootState) => state.catalog);
+// Generated selectors, bound to the catalog location in CatalogRootShape. selectById is O(1).
+const s = adapter.getSelectors((state: CatalogRootShape) => state.catalog);
 export const selectAllProducts = s.selectAll;
 export const selectProductById = s.selectById;
 export const selectProductCount = s.selectTotal;
@@ -83,6 +87,6 @@ export const selectCategoryCounts = createSelector(
 // The pitfall this DOESN'T solve: passing a freshly-allocated object literal
 // (selectX(state, { id })) — every call is a different identity → cache miss.
 export const selectProductsByCategory = createSelector(
-	[selectAllProducts, (_state: RootState, category: string) => category],
+	[selectAllProducts, (_state: CatalogRootShape, category: string) => category],
 	(products, category) => products.filter((p) => p.category === category),
 );

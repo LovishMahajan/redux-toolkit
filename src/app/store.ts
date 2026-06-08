@@ -2,13 +2,13 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { authReducer } from "../features/auth";
 import { cartReducer } from "../features/cart";
-import { catalogReducer } from "../features/catalog";
 import { listenerMiddleware } from "./listeners";
 import {
 	analyticsMiddleware,
 	auditMiddleware,
 	timingMiddleware,
 } from "../observability";
+import { api } from "./api";
 
 // Build the root reducer separately so RootState can be derived from it
 // WITHOUT depending on `store`. This breaks the cycle:
@@ -16,7 +16,7 @@ import {
 const rootReducer = combineReducers({
 	auth: authReducer,
 	cart: cartReducer,
-	catalog: catalogReducer,
+	[api.reducerPath]: api.reducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -35,7 +35,12 @@ export const store = configureStore({
 			// but disabling it to silence a "mutation detected" error hides a real bug.
 		})
 			.prepend(listenerMiddleware.middleware) // runs first — sees raw actions
-			.concat(timingMiddleware, analyticsMiddleware, auditMiddleware), // after thunk — plain actions only
+			.concat(
+				timingMiddleware,
+				analyticsMiddleware,
+				auditMiddleware,
+				api.middleware,
+			), // api.middleware powers the cache lifecycle, dedup, and tag-driven refetch
 });
 
 export type AppDispatch = typeof store.dispatch;

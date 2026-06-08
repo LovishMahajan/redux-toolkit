@@ -3,11 +3,12 @@ import { describe, it, expect } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
 import { authReducer, loginUser } from '..';
 import { cartReducer } from '../../cart';
-import { catalogReducer } from '../../catalog';
+import { api } from '../../../app/api';
 
 const setup = () =>
   configureStore({
-    reducer: { auth: authReducer, cart: cartReducer, catalog: catalogReducer },
+    reducer: { auth: authReducer, cart: cartReducer, [api.reducerPath]: api.reducer },
+    middleware: (gdm) => gdm().concat(api.middleware),
   });
 
 describe('loginUser lifecycle', () => {

@@ -1,14 +1,15 @@
 // src/features/catalog/__tests__/catalogSlice.test.ts
 import { describe, it, expect } from "vitest";
-import {
-	catalogReducer,
+// The Phase 3 slice is orphaned from the app store (Phase 4 moved product data
+// into the RTK Query cache), but its eviction-policy lesson is still worth
+// testing in isolation. Import the slice directly rather than through the barrel.
+import catalogReducer, {
 	productsUpserted,
 	selectAffordableProducts,
 	selectProductById,
 	selectProductCount,
-	type Product,
-} from "..";
-import type { RootState } from "../../../app";
+} from "../catalogSlice";
+import type { Product } from "../types";
 
 const makeProduct = (i: number, overrides: Partial<Product> = {}): Product => ({
 	id: `p_${i}`,
@@ -19,8 +20,7 @@ const makeProduct = (i: number, overrides: Partial<Product> = {}): Product => ({
 	...overrides,
 });
 
-const wrap = (catalog: ReturnType<typeof catalogReducer>) =>
-	({ catalog }) as unknown as RootState;
+const wrap = (catalog: ReturnType<typeof catalogReducer>) => ({ catalog });
 
 describe("catalog slice — adapter wiring", () => {
 	it("selectProductById is O(1) and returns the right entity", () => {

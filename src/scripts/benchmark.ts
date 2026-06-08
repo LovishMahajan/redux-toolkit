@@ -2,18 +2,21 @@
 // Proves the lesson's three claims at scale:
 //   1. array.find is O(n) — slow on 50k.
 //   2. createEntityAdapter gives O(1) lookups (same shape as Map.get).
-//   3. The catalog slice's eviction policy keeps memory bounded under heavy upsert.
+//   3. A bounded-eviction adapter reducer keeps memory bounded under heavy upsert.
+//
+// Phase 4 note: the original catalogSlice was deleted (server-owned data moved to
+// the RTK Query cache). Bench 3 keeps its lesson — bounded adapter eviction at 50k
+// — via a local createSlice that is NOT wired into the app store.
 //
 // Run: npm run benchmark
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import {
-	catalogReducer,
-	productsUpserted,
-	selectProductById,
-	selectProductCount,
-	type Product,
-} from "../features/catalog";
-import type { RootState } from "../app";
+	configureStore,
+	createEntityAdapter,
+	createSlice,
+	type EntityState,
+	type PayloadAction,
+} from "@reduxjs/toolkit";
+import type { Product } from "../features/catalog";
 
 const N = 50_000;
 const ITERATIONS = 1_000;
@@ -47,12 +50,44 @@ for (const id of probesAll) map.get(id);
 const mapMs = performance.now() - t;
 console.log(`Map.get     x${ITERATIONS} over 50k map   : ${fmt(mapMs)}`);
 
-// ─── Bench 3: store with cap + selectById — O(1) on the bounded store ─────
-const store = configureStore({
-	reducer: combineReducers({ catalog: catalogReducer }),
+// ─── Bench 3: bounded adapter store — O(1) lookups under cap ───────────────
+// Local slice (NOT wired into the app store) — same eviction pattern Phase 3
+// had, isolated here so the benchmark still proves the lesson.
+const MAX_PRODUCTS = 500;
+const adapter = createEntityAdapter<Product>({
+	sortComparer: (a, b) => a.name.localeCompare(b.name),
 });
-store.dispatch(productsUpserted(products));
-const finalSize = selectProductCount(store.getState() as unknown as RootState);
+
+function evictToCapByAge(state: EntityState<Product, string>) {
+	const overflow = state.ids.length - MAX_PRODUCTS;
+	if (overflow <= 0) return;
+	const toEvict = state.ids
+		.map((id) => state.entities[id])
+		.filter((p): p is Product => p !== undefined)
+		.sort((a, b) => a.updatedAt.localeCompare(b.updatedAt))
+		.slice(0, overflow)
+		.map((p) => p.id);
+	adapter.removeMany(state, toEvict);
+}
+
+const benchSlice = createSlice({
+	name: "benchCatalog",
+	initialState: adapter.getInitialState(),
+	reducers: {
+		upserted(state, action: PayloadAction<Product[]>) {
+			adapter.upsertMany(state, action.payload);
+			evictToCapByAge(state);
+		},
+	},
+});
+
+const store = configureStore({ reducer: { benchCatalog: benchSlice.reducer } });
+const selectors = adapter.getSelectors(
+	(s: ReturnType<typeof store.getState>) => s.benchCatalog,
+);
+
+store.dispatch(benchSlice.actions.upserted(products));
+const finalSize = selectors.selectTotal(store.getState());
 console.log(`store size after 50k upsert (cap 500)    : ${finalSize}`);
 
 // After eviction, only the newest 500 ids survive. Probe within that range.
@@ -60,9 +95,9 @@ const survivors = Array.from(
 	{ length: ITERATIONS },
 	(_, i) => `p_${N - 1 - (i % 500)}`,
 );
-const stateRef = store.getState() as unknown as RootState;
+const stateRef = store.getState();
 t = performance.now();
-for (const id of survivors) selectProductById(stateRef, id);
+for (const id of survivors) selectors.selectById(stateRef, id);
 const adapterMs = performance.now() - t;
 console.log(`selectById  x${ITERATIONS} on adapter     : ${fmt(adapterMs)}`);
 

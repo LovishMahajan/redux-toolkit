@@ -5,6 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"demo": "tsx src/scripts/demo.ts",
+		"demo:rtkq": "tsx src/scripts/demo-rtkq.ts",
 		"benchmark": "tsx src/scripts/benchmark.ts",
 		"test": "vitest run"
 	},
