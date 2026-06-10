@@ -1,0 +1,10 @@
+{
+  "name": "phase2-slices",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo": "tsx src/scripts/demo.ts",
+    "typecheck": "tsc --noEmit"
+  }
+}

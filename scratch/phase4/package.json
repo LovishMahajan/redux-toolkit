@@ -1,0 +1,11 @@
+{
+  "name": "phase4-listeners",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo": "tsx src/scripts/demo.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  }
+}
